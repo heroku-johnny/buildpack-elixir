@@ -1,0 +1,7 @@
+# Local development
+.claude/
+CLAUDE.md
+.env
+
+# bats-core test outputs
+test/tmp/

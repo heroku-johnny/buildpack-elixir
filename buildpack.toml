@@ -1,0 +1,11 @@
+[buildpack]
+name = "Elixir"
+
+[publish.Ignore]
+files = [
+  "test/",
+  ".github/",
+  ".gitignore",
+  ".gitmodules",
+  "buildpack.toml",
+]
