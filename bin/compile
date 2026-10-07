@@ -11,6 +11,8 @@ source "${buildpack_path}/lib/output.sh"
 source "${buildpack_path}/lib/paths.sh"
 source "${buildpack_path}/lib/stack.sh"
 source "${buildpack_path}/lib/config.sh"
+source "${buildpack_path}/lib/erlang.sh"
+source "${buildpack_path}/lib/elixir.sh"
 
 mkdir -p "$(platform_tools_dir)"
 
@@ -19,3 +21,9 @@ export_mix_env
 export_mix_home
 export_hex_home
 load_config
+
+download_erlang
+install_erlang
+
+download_elixir
+install_elixir
