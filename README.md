@@ -5,11 +5,11 @@ Supports stacks **heroku-22**, **heroku-24**, and **heroku-26**.
 
 ## Supported stacks and versions
 
-| Stack | Ubuntu | OTP minimum | Elixir minimum |
-|---|---|---|---|
-| heroku-22 | 22.04 LTS | 24.2 | 1.12 |
-| heroku-24 | 24.04 LTS | 24.3.4 | 1.12 |
-| heroku-26 | 26.04 LTS | 26.0 | 1.15 |
+| Stack | Ubuntu | OTP minimum | OTP latest confirmed | Elixir minimum |
+|---|---|---|---|---|
+| heroku-22 | 22.04 LTS | 24.2 | 29.1.1 | 1.12 |
+| heroku-24 | 24.04 LTS | 24.3.4 | 29.1.1 | 1.12 |
+| heroku-26 | 26.04 LTS | 26.0 | 29.1.1 | 1.15 |
 
 OTP binaries are provided by [hex.pm builds](https://builds.hex.pm/builds/otp/).
 Elixir binaries are provided by [hex.pm builds](https://builds.hex.pm/builds/elixir/).
@@ -28,8 +28,8 @@ Create `elixir_buildpack.config` in your project root. Both `erlang_version` and
 `elixir_version` are required — the buildpack will not guess defaults.
 
 ```bash
-erlang_version=27.2
-elixir_version=v1.18.3
+erlang_version=29.1.1
+elixir_version=1.20.4
 ```
 
 ### 3. Deploy
@@ -88,8 +88,8 @@ error message naming the hook and the command that failed.
 Set `release=true` to build a Mix release after compile:
 
 ```bash
-erlang_version=27.2
-elixir_version=v1.18.3
+erlang_version=29.1.1
+elixir_version=1.20.4
 release=true
 ```
 
@@ -169,8 +169,8 @@ and Elixir versions — heroku-26 requires OTP 26.0+ and Elixir 1.15+:
 
 ```bash
 # elixir_buildpack.config
-erlang_version=27.2
-elixir_version=v1.18.3
+erlang_version=29.1.1
+elixir_version=1.20.4
 ```
 
 Check available OTP versions for heroku-26:

@@ -57,12 +57,27 @@ install_erlang() {
   tmp_dir=$(mktemp -d)
 
   tar zxf "$(erlang_cache_dir)/$(otp_tarball_name)" -C "${tmp_dir}" --strip-components=1
-  "${tmp_dir}/Install" -minimal "${tmp_dir}"
 
-  rm -rf "$(erlang_build_dir)"
-  mkdir -p "$(erlang_build_dir)"
-  cp -R "${tmp_dir}/." "$(erlang_build_dir)/"
+  # OTP 24 and earlier hardcode ROOTDIR in the erl wrapper via Install.
+  # Symlinking the runtime path to the temp dir lets Install verify the
+  # directory exists while setting ROOTDIR to the runtime path (/app/...),
+  # not the temp path. Same approach used by HashNuke's buildpack.
+  rm -rf "$(erlang_runtime_dir)"
+  mkdir -p "$(dirname "$(erlang_runtime_dir)")"
+  ln -s "${tmp_dir}" "$(erlang_runtime_dir)"
+  "${tmp_dir}/Install" -minimal "$(erlang_runtime_dir)"
+  rm "$(erlang_runtime_dir)"
+
+  mkdir -p "$(erlang_runtime_dir)"
+  cp -R "${tmp_dir}/." "$(erlang_runtime_dir)/"
   rm -rf "${tmp_dir}"
+
+  # On Heroku's older build system BUILD_DIR != /app, so also copy to the
+  # build path so OTP is available during hex install, deps.get, and compile.
+  if [ "$(erlang_build_dir)" != "$(erlang_runtime_dir)" ]; then
+    mkdir -p "$(erlang_build_dir)"
+    cp -R "$(erlang_runtime_dir)/." "$(erlang_build_dir)/"
+  fi
 
   PATH="$(erlang_build_dir)/bin:${PATH}"
   export PATH
