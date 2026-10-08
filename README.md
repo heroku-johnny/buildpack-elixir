@@ -1,4 +1,4 @@
-# Elixir Buildpack for Heroku
+# Elixir Buildpack for Heroku Stack >=22
 
 A Heroku buildpack for [Elixir](https://elixir-lang.org) and [Erlang/OTP](https://www.erlang.org).
 Supports stacks **heroku-22**, **heroku-24**, and **heroku-26**.
