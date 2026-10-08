@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e -o pipefail
+
+cd "$1"
+# shellcheck disable=SC2086,SC2154  # test_args is an optional user-set var; word-split is intentional
+mix test ${test_args}
