@@ -1,5 +1,10 @@
 [buildpack]
+id = "heroku-johnny/elixir"
 name = "Elixir"
+description = "Heroku buildpack for Elixir and Erlang/OTP. Supports heroku-22, heroku-24, and heroku-26."
+keywords = ["elixir", "erlang", "otp", "phoenix"]
+licenses = ["MIT"]
+homepage = "https://github.com/heroku-johnny/buildpack-elixir"
 
 [publish.Ignore]
 files = [
