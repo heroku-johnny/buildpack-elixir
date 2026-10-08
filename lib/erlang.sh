@@ -53,9 +53,9 @@ download_erlang() {
 install_erlang() {
   output_section "Installing OTP ${erlang_version}"
 
-  # Extract directly to the final location so OTP's Install script sets
-  # ROOTDIR correctly. Extracting to a temp dir and copying causes OTP 24's
-  # erl wrapper to have the wrong (now-deleted) ROOTDIR.
+  # Extract and install with the build-time path as ROOTDIR so OTP works
+  # during the compile phase. prepare_erlang_for_runtime must be called
+  # after compilation to patch ROOTDIR to the runtime path (/app/...).
   rm -rf "$(erlang_build_dir)"
   mkdir -p "$(erlang_build_dir)"
 
@@ -65,4 +65,12 @@ install_erlang() {
   PATH="$(erlang_build_dir)/bin:${PATH}"
   export PATH
   output_line "OTP ${erlang_version} ready"
+}
+
+prepare_erlang_for_runtime() {
+  # OTP 24 and earlier hardcode ROOTDIR in the erl wrapper. The build path
+  # (/tmp/build_*) differs from the runtime path (/app). Re-run Install with
+  # the runtime path after compilation so the deployed slug has the correct
+  # ROOTDIR. Must be called after all build-time OTP/Mix usage is complete.
+  "$(erlang_build_dir)/Install" -minimal "$(erlang_runtime_dir)"
 }
