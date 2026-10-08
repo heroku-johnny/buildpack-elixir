@@ -31,7 +31,7 @@ compile_app() {
     }
   fi
 
-  (cd "${build_path}" && mix deps.clean --unused --unlock 2>/dev/null || true)
+  (cd "${build_path}" && { mix deps.clean --unused --unlock 2>/dev/null || true; })
 }
 
 build_release() {
