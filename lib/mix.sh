@@ -4,13 +4,37 @@
 
 install_hex() {
   output_section "Installing Hex"
-  # HEX_UNSAFE_HTTPS: OTP 25+ strict TLS validation rejects the key_usage_mismatch
-  # in the builds.hex.pm cert chain. Hex verifies package integrity by hash
-  # independently of HTTPS, so this does not compromise package authenticity.
-  HEX_UNSAFE_HTTPS=1 mix local.hex --force --quiet
+  # Try the standard path first — works on subsequent builds when hex is cached,
+  # and on stacks where builds.hex.pm's TLS cert chain is accepted by OTP.
+  # OTP 25+ strict key_usage_mismatch validation rejects builds.hex.pm's chain
+  # on some stacks; fall back to GitHub which uses a clean DigiCert chain.
+  # hex has no external Mix deps so compilation is self-contained.
+  if ! mix local.hex --force --quiet 2>/dev/null; then
+    output_line "Fetching Hex from GitHub (builds.hex.pm TLS cert chain workaround)"
+    mix archive.install github hexpm/hex branch latest --force || {
+      output_error "Failed to install Hex."
+      output_line "See: https://hexdocs.pm/mix/Mix.Tasks.Local.Hex.html"
+      exit 1
+    }
+  fi
 }
 
 install_rebar() {
   output_section "Installing rebar"
-  HEX_UNSAFE_HTTPS=1 mix local.rebar --force --quiet
+  # Same SSL workaround as hex: fall back to downloading the rebar3 escript
+  # from GitHub releases (DigiCert chain, no key_usage_mismatch).
+  if ! mix local.rebar --force 2>/dev/null; then
+    output_line "Fetching rebar3 from GitHub (builds.hex.pm TLS cert chain workaround)"
+    local rebar_path
+    rebar_path=$(mktemp)
+    if curl -fsSL \
+      "https://github.com/erlang/rebar3/releases/latest/download/rebar3" \
+      -o "${rebar_path}"; then
+      chmod +x "${rebar_path}"
+      mix local.rebar rebar3 "${rebar_path}" --force
+    else
+      output_warning "rebar3 install failed — only required for Erlang dependencies."
+    fi
+    rm -f "${rebar_path}"
+  fi
 }

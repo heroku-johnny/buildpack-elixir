@@ -5,3 +5,6 @@ CLAUDE.md
 
 # bats-core test outputs
 test/tmp/
+
+# Local test apps (not part of the buildpack)
+testing-apps/

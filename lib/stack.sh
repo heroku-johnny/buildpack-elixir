@@ -24,10 +24,11 @@ stack_otp_minimum() {
   esac
 }
 
-# Minimum OTP patch version for stacks where not all 24.x builds exist.
+# Minimum OTP patch version for stacks where not all builds in a major series exist.
 # Returns an empty string when the major version alone is sufficient.
 stack_otp_minimum_patch() {
   case "${STACK}" in
+    heroku-22) echo "24.2" ;;
     heroku-24) echo "24.3.4" ;;
     *) echo "" ;;
   esac
@@ -54,10 +55,12 @@ validate_otp_for_stack() {
     exit 1
   fi
 
-  # heroku-24 special case: OTP 24.0–24.2 not available
+  # Some stacks only have a subset of builds within a major OTP series.
   local min_patch
   min_patch=$(stack_otp_minimum_patch)
-  if [ -n "$min_patch" ] && [ "$major" -eq 24 ]; then
+  local min_patch_major
+  min_patch_major=$(echo "$min_patch" | cut -d. -f1)
+  if [ -n "$min_patch" ] && [ "$major" -eq "$min_patch_major" ]; then
     if ! version_gte "$version" "$min_patch"; then
       output_error "OTP ${version} is not available for ${STACK}."
       output_line "The minimum supported OTP 24.x version for ${STACK} is ${min_patch}."

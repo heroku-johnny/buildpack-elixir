@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091  # dynamic source paths can't be followed statically
 
 set -e -o pipefail
 
@@ -6,7 +7,9 @@ buildpack_path=$(
   cd "$(dirname "$(dirname "$0")")"
   pwd
 )
+# shellcheck disable=SC2034  # consumed by sourced lib scripts
 build_path=$(cd "$1" && pwd)
+# shellcheck disable=SC2034  # consumed by sourced lib scripts
 cache_path=$(cd "$2" && pwd)
 env_path=$(cd "$3" && pwd)
 
