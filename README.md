@@ -140,6 +140,42 @@ always_rebuild=true
 Reset it to `false` after the build completes, or the cache will be cleared on every
 subsequent deploy.
 
+## Migrating from HashNuke's buildpack
+
+If you're currently using [HashNuke/heroku-buildpack-elixir](https://github.com/HashNuke/heroku-buildpack-elixir),
+migration is straightforward. The config file name and most options are identical.
+
+### Quick migration
+
+```bash
+heroku buildpacks:set https://github.com/heroku-johnny/buildpack-elixir
+git push heroku main
+```
+
+That's it for most apps. Read on if you hit any of the breaking changes below.
+
+### Breaking changes
+
+| Change | Action required |
+|---|---|
+| `erlang_version` and `elixir_version` are now **required** | Add both to your `elixir_buildpack.config` if missing |
+| `pre_compile` and `post_compile` are removed | Rename to `hook_pre_compile` / `hook_post_compile` (they were already deprecated in the old buildpack) |
+| `config_vars_to_export` is not supported | Remove it; config vars from `heroku config` are already available during build |
+
+### Upgrading stacks at the same time
+
+If you're also upgrading from heroku-22 or heroku-24 to heroku-26, update your OTP
+and Elixir versions — heroku-26 requires OTP 26.0+ and Elixir 1.15+:
+
+```bash
+# elixir_buildpack.config
+erlang_version=27.2
+elixir_version=v1.18.3
+```
+
+Check available OTP versions for heroku-26:
+https://builds.hex.pm/builds/otp/ubuntu-26.04/builds.txt
+
 ## Contributing
 
 1. Fork the repository
