@@ -4,16 +4,24 @@
 
 install_hex() {
   output_section "Installing Hex"
-  # HEX_CACERTS_PATH: Mix.Utils.read_httpc uses public_key:cacerts_get() by
-  # default, which on OTP 25+ may include cross-signed certs that trigger the
-  # strict key_usage_mismatch check against builds.hex.pm. Pointing to the
-  # system CA bundle directly uses the clean Ubuntu cert store instead.
-  HEX_CACERTS_PATH=/etc/ssl/certs/ca-certificates.crt \
-    mix local.hex --force --quiet
+  # Try the standard path first — works on subsequent builds when hex is cached,
+  # and on stacks where builds.hex.pm's TLS cert chain is accepted by OTP.
+  # OTP 25+ strict key_usage_mismatch validation rejects builds.hex.pm's chain
+  # on some stacks; fall back to GitHub which uses a clean DigiCert chain.
+  # hex has no external Mix deps so compilation is self-contained.
+  if ! mix local.hex --force --quiet 2>/dev/null; then
+    output_line "Fetching Hex from GitHub (builds.hex.pm TLS cert chain workaround)"
+    mix archive.install github hexpm/hex branch latest --force --quiet || {
+      output_error "Failed to install Hex."
+      output_line "See: https://hexdocs.pm/mix/Mix.Tasks.Local.Hex.html"
+      exit 1
+    }
+  fi
 }
 
 install_rebar() {
   output_section "Installing rebar"
-  HEX_CACERTS_PATH=/etc/ssl/certs/ca-certificates.crt \
-    mix local.rebar --force --quiet
+  if ! mix local.rebar --force --quiet 2>/dev/null; then
+    output_warning "rebar3 install failed — only required for Erlang dependencies."
+  fi
 }
