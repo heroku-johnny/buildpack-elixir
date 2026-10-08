@@ -21,7 +21,7 @@ source "${buildpack_path}/lib/cache.sh"
 mkdir -p "$(platform_tools_dir)"
 
 export_env_vars "${env_path}"
-export_mix_env
+export_mix_env "prod"
 export_mix_home
 export_hex_home
 load_config
