@@ -68,6 +68,19 @@ setup() {
   [ "$status" -eq 0 ]
 }
 
+@test "validate_otp_for_stack rejects OTP 24.1 on heroku-22" {
+  STACK="heroku-22"
+  run validate_otp_for_stack "24.1"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"not available for heroku-22"* ]]
+}
+
+@test "validate_otp_for_stack rejects OTP 24.0 on heroku-22" {
+  STACK="heroku-22"
+  run validate_otp_for_stack "24.0"
+  [ "$status" -eq 1 ]
+}
+
 @test "validate_otp_for_stack rejects OTP 24.x on heroku-26" {
   STACK="heroku-26"
   run validate_otp_for_stack "24.3.4"
