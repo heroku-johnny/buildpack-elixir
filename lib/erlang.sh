@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck shell=bash
+# shellcheck disable=SC2154  # erlang_version, STACK set by bin/compile before sourcing
 
 otp_tarball_name() {
   echo "OTP-${erlang_version}.tar.gz"
@@ -16,7 +18,7 @@ erlang_version_cached() {
 }
 
 _mark_erlang_cached() {
-  echo "${erlang_version}" > "$(erlang_cache_dir)/.version"
+  echo "${erlang_version}" >"$(erlang_cache_dir)/.version"
 }
 
 download_erlang() {
@@ -37,11 +39,11 @@ download_erlang() {
   mkdir -p "$(erlang_cache_dir)"
 
   if ! curl --fail --silent --show-error --location \
-       --output "$(erlang_cache_dir)/$(otp_tarball_name)" \
-       "${url}"; then
+    --output "$(erlang_cache_dir)/$(otp_tarball_name)" \
+    "${url}"; then
     output_error "Could not download OTP ${erlang_version} for ${STACK}."
-    output_line  "Check erlang_version in elixir_buildpack.config."
-    output_line  "Available versions: $(otp_base_url)/builds.txt"
+    output_line "Check erlang_version in elixir_buildpack.config."
+    output_line "Available versions: $(otp_base_url)/builds.txt"
     exit 1
   fi
 
@@ -62,6 +64,7 @@ install_erlang() {
   cp -R "${tmp_dir}/." "$(erlang_build_dir)/"
   rm -rf "${tmp_dir}"
 
-  export PATH="$(erlang_build_dir)/bin:${PATH}"
+  PATH="$(erlang_build_dir)/bin:${PATH}"
+  export PATH
   output_line "OTP ${erlang_version} ready"
 }

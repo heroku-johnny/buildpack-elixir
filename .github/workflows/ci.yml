@@ -7,6 +7,27 @@ on:
     branches: [main]
 
 jobs:
+  lint:
+    name: Lint and format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Install shfmt
+        run: |
+          curl -sSL https://github.com/mvdan/sh/releases/download/v3.10.0/shfmt_v3.10.0_linux_amd64 \
+            -o /usr/local/bin/shfmt
+          chmod +x /usr/local/bin/shfmt
+
+      - name: Run shellcheck
+        run: shellcheck bin/detect bin/compile bin/release lib/*.sh
+
+      - name: Check formatting (shfmt)
+        run: shfmt -d -i 2 -ci bin/detect bin/compile bin/release lib/*.sh
+
   test:
     name: Unit tests
     runs-on: ubuntu-latest
@@ -16,4 +37,4 @@ jobs:
           submodules: true
 
       - name: Run bats unit tests
-        run: test/bats/bin/bats test/unit/
+        run: STACK=heroku-22 test/bats/bin/bats test/unit/

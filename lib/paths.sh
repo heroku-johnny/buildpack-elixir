@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck shell=bash
+# shellcheck disable=SC2154  # build_path, cache_path, runtime_path, STACK set by bin/compile
 
 # Build-time paths (under BUILD_DIR / CACHE_DIR)
 

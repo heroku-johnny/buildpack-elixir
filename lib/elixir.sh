@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck shell=bash
+# shellcheck disable=SC2154  # erlang_version, elixir_version, elixir_force_fetch set by bin/compile
 
 # Extract the major version number from an OTP version string.
 # e.g. 27.3.1 → 27
@@ -27,7 +29,7 @@ elixir_version_cached() {
 }
 
 _mark_elixir_cached() {
-  echo "${elixir_version}-otp-$(otp_major)" > "$(elixir_cache_dir)/.version"
+  echo "${elixir_version}-otp-$(otp_major)" >"$(elixir_cache_dir)/.version"
 }
 
 download_elixir() {
@@ -51,7 +53,7 @@ download_elixir() {
   output_line "Source: ${otp_url}"
 
   if curl --fail --silent --show-error --location \
-       --output "${zip_path}" "${otp_url}" 2>/dev/null; then
+    --output "${zip_path}" "${otp_url}" 2>/dev/null; then
     _mark_elixir_cached
     return
   fi
@@ -64,14 +66,14 @@ download_elixir() {
   output_line "Source: ${generic_url}"
 
   if curl --fail --silent --show-error --location \
-       --output "${zip_path}" "${generic_url}" 2>/dev/null; then
+    --output "${zip_path}" "${generic_url}" 2>/dev/null; then
     _mark_elixir_cached
     return
   fi
 
   output_error "Could not download Elixir ${elixir_version}."
-  output_line  "Check elixir_version in elixir_buildpack.config."
-  output_line  "Available versions: https://builds.hex.pm/builds/elixir/builds.txt"
+  output_line "Check elixir_version in elixir_buildpack.config."
+  output_line "Available versions: https://builds.hex.pm/builds/elixir/builds.txt"
   exit 1
 }
 
@@ -91,7 +93,8 @@ install_elixir() {
   fi
 
   chmod +x "$(elixir_build_dir)/bin/"*
-  export PATH="$(elixir_build_dir)/bin:${PATH}"
+  PATH="$(elixir_build_dir)/bin:${PATH}"
+  export PATH
   export LC_CTYPE="${LC_CTYPE:-en_US.utf8}"
 
   output_line "Elixir ${elixir_version} ready"

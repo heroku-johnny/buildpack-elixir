@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck shell=bash
+# shellcheck disable=SC2154  # always_rebuild, build_path, STACK set by bin/compile before sourcing
 
 # Detect whether the Heroku stack has changed since the last build.
 # Returns 0 if changed, 1 if unchanged or first build.
@@ -10,7 +12,7 @@ stack_changed() {
 
 _mark_stack_cached() {
   mkdir -p "$(dirname "$(stack_marker_file)")"
-  echo "${STACK}" > "$(stack_marker_file)"
+  echo "${STACK}" >"$(stack_marker_file)"
 }
 
 # Wipe the entire stack-namespaced cache. Called on stack change or always_rebuild.
