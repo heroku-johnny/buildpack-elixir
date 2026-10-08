@@ -29,7 +29,7 @@ stack_otp_minimum() {
 stack_otp_minimum_patch() {
   case "${STACK}" in
     heroku-24) echo "24.3.4" ;;
-    *)         echo "" ;;
+    *) echo "" ;;
   esac
 }
 
@@ -48,9 +48,9 @@ validate_otp_for_stack() {
     min_patch=$(stack_otp_minimum_patch)
     local display_min="${min_patch:-${min_major}.x}"
     output_error "OTP ${version} is not available for ${STACK}."
-    output_line  "The minimum supported OTP version for ${STACK} is ${display_min}."
-    output_line  "Update erlang_version in your elixir_buildpack.config."
-    output_line  "Available versions: $(otp_base_url)/builds.txt"
+    output_line "The minimum supported OTP version for ${STACK} is ${display_min}."
+    output_line "Update erlang_version in your elixir_buildpack.config."
+    output_line "Available versions: $(otp_base_url)/builds.txt"
     exit 1
   fi
 
@@ -60,9 +60,9 @@ validate_otp_for_stack() {
   if [ -n "$min_patch" ] && [ "$major" -eq 24 ]; then
     if ! version_gte "$version" "$min_patch"; then
       output_error "OTP ${version} is not available for ${STACK}."
-      output_line  "The minimum supported OTP 24.x version for ${STACK} is ${min_patch}."
-      output_line  "Update erlang_version in your elixir_buildpack.config."
-      output_line  "Available versions: $(otp_base_url)/builds.txt"
+      output_line "The minimum supported OTP 24.x version for ${STACK} is ${min_patch}."
+      output_line "Update erlang_version in your elixir_buildpack.config."
+      output_line "Available versions: $(otp_base_url)/builds.txt"
       exit 1
     fi
   fi

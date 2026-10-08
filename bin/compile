@@ -2,7 +2,10 @@
 
 set -e -o pipefail
 
-buildpack_path=$(cd "$(dirname "$(dirname "$0")")"; pwd)
+buildpack_path=$(
+  cd "$(dirname "$(dirname "$0")")"
+  pwd
+)
 build_path=$(cd "$1" && pwd)
 cache_path=$(cd "$2" && pwd)
 env_path=$(cd "$3" && pwd)
@@ -18,7 +21,7 @@ source "${buildpack_path}/lib/cache.sh"
 mkdir -p "$(platform_tools_dir)"
 
 export_env_vars "${env_path}"
-export_mix_env
+export_mix_env "prod"
 export_mix_home
 export_hex_home
 load_config
