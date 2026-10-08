@@ -54,7 +54,6 @@ compile_app
 hook_post_compile
 
 build_release
-prepare_erlang_for_runtime
 backup_app_cache
 backup_mix_cache
 

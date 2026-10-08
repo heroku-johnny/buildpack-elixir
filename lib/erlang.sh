@@ -53,24 +53,33 @@ download_erlang() {
 install_erlang() {
   output_section "Installing OTP ${erlang_version}"
 
-  # Extract and install with the build-time path as ROOTDIR so OTP works
-  # during the compile phase. prepare_erlang_for_runtime must be called
-  # after compilation to patch ROOTDIR to the runtime path (/app/...).
-  rm -rf "$(erlang_build_dir)"
-  mkdir -p "$(erlang_build_dir)"
+  local tmp_dir
+  tmp_dir=$(mktemp -d)
 
-  tar zxf "$(erlang_cache_dir)/$(otp_tarball_name)" -C "$(erlang_build_dir)" --strip-components=1
-  "$(erlang_build_dir)/Install" -minimal "$(erlang_build_dir)"
+  tar zxf "$(erlang_cache_dir)/$(otp_tarball_name)" -C "${tmp_dir}" --strip-components=1
+
+  # OTP 24 and earlier hardcode ROOTDIR in the erl wrapper via Install.
+  # Symlinking the runtime path to the temp dir lets Install verify the
+  # directory exists while setting ROOTDIR to the runtime path (/app/...),
+  # not the temp path. Same approach used by HashNuke's buildpack.
+  rm -rf "$(erlang_runtime_dir)"
+  mkdir -p "$(dirname "$(erlang_runtime_dir)")"
+  ln -s "${tmp_dir}" "$(erlang_runtime_dir)"
+  "${tmp_dir}/Install" -minimal "$(erlang_runtime_dir)"
+  rm "$(erlang_runtime_dir)"
+
+  mkdir -p "$(erlang_runtime_dir)"
+  cp -R "${tmp_dir}/." "$(erlang_runtime_dir)/"
+  rm -rf "${tmp_dir}"
+
+  # On Heroku's older build system BUILD_DIR != /app, so also copy to the
+  # build path so OTP is available during hex install, deps.get, and compile.
+  if [ "$(erlang_build_dir)" != "$(erlang_runtime_dir)" ]; then
+    mkdir -p "$(erlang_build_dir)"
+    cp -R "$(erlang_runtime_dir)/." "$(erlang_build_dir)/"
+  fi
 
   PATH="$(erlang_build_dir)/bin:${PATH}"
   export PATH
   output_line "OTP ${erlang_version} ready"
-}
-
-prepare_erlang_for_runtime() {
-  # OTP 24 and earlier hardcode ROOTDIR in the erl wrapper. The build path
-  # (/tmp/build_*) differs from the runtime path (/app). Re-run Install with
-  # the runtime path after compilation so the deployed slug has the correct
-  # ROOTDIR. Must be called after all build-time OTP/Mix usage is complete.
-  "$(erlang_build_dir)/Install" -minimal "$(erlang_runtime_dir)"
 }
