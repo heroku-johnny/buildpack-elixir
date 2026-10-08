@@ -17,6 +17,10 @@ source "${buildpack_path}/lib/config.sh"
 source "${buildpack_path}/lib/erlang.sh"
 source "${buildpack_path}/lib/elixir.sh"
 source "${buildpack_path}/lib/cache.sh"
+source "${buildpack_path}/lib/mix.sh"
+source "${buildpack_path}/lib/hooks.sh"
+source "${buildpack_path}/lib/app.sh"
+source "${buildpack_path}/lib/profile.sh"
 
 mkdir -p "$(platform_tools_dir)"
 
@@ -33,3 +37,22 @@ install_erlang
 
 download_elixir
 install_elixir
+
+restore_mix_cache
+install_hex
+install_rebar
+
+restore_app_cache
+hook_pre_fetch_dependencies
+fetch_dependencies
+
+hook_pre_compile
+compile_app
+hook_post_compile
+
+build_release
+backup_app_cache
+backup_mix_cache
+
+write_profile_d
+write_export

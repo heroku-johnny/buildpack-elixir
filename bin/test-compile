@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e -o pipefail
+
+export MIX_ENV="test"
+
+exec "$(dirname "$0")/compile" "$1" "$2" "$3"
