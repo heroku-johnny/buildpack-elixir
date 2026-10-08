@@ -13,6 +13,7 @@ source "${buildpack_path}/lib/stack.sh"
 source "${buildpack_path}/lib/config.sh"
 source "${buildpack_path}/lib/erlang.sh"
 source "${buildpack_path}/lib/elixir.sh"
+source "${buildpack_path}/lib/cache.sh"
 
 mkdir -p "$(platform_tools_dir)"
 
@@ -21,6 +22,8 @@ export_mix_env
 export_mix_home
 export_hex_home
 load_config
+
+prepare_cache
 
 download_erlang
 install_erlang
