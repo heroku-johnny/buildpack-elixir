@@ -23,18 +23,21 @@ jobs:
           chmod +x /usr/local/bin/shfmt
 
       - name: Run shellcheck
-        run: shellcheck bin/detect bin/compile bin/release lib/*.sh
+        run: shellcheck bin/detect bin/compile bin/release bin/test bin/test-compile lib/*.sh
 
       - name: Check formatting (shfmt)
-        run: shfmt -d -i 2 -ci bin/detect bin/compile bin/release lib/*.sh
+        run: shfmt -d -i 2 -ci bin/detect bin/compile bin/release bin/test bin/test-compile lib/*.sh
 
   test:
-    name: Unit tests
+    name: Unit tests (${{ matrix.stack }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        stack: [heroku-22, heroku-24, heroku-26]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: Run bats unit tests
-        run: STACK=heroku-22 test/bats/bin/bats test/unit/
+        run: STACK=${{ matrix.stack }} test/bats/bin/bats test/unit/
