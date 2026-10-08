@@ -11,7 +11,7 @@ install_hex() {
   # hex has no external Mix deps so compilation is self-contained.
   if ! mix local.hex --force --quiet 2>/dev/null; then
     output_line "Fetching Hex from GitHub (builds.hex.pm TLS cert chain workaround)"
-    mix archive.install github hexpm/hex branch latest --force --quiet || {
+    mix archive.install github hexpm/hex branch latest --force || {
       output_error "Failed to install Hex."
       output_line "See: https://hexdocs.pm/mix/Mix.Tasks.Local.Hex.html"
       exit 1
