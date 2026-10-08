@@ -80,6 +80,7 @@ export_env_vars() {
   if [ -d "${env_dir}" ]; then
     output_section "Exporting config vars"
     for file in "${env_dir}"/*; do
+      [ -f "${file}" ] || continue
       local key
       key=$(basename "${file}")
       if ! echo "${key}" | grep -qE "${denylist}"; then
