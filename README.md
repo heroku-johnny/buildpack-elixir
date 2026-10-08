@@ -198,4 +198,4 @@ STACK=heroku-26 test/bats/bin/bats test/unit/
 
 ## License
 
-MIT
+[MIT](LICENSE)
