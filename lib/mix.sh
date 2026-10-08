@@ -21,7 +21,20 @@ install_hex() {
 
 install_rebar() {
   output_section "Installing rebar"
-  if ! mix local.rebar --force --quiet 2>/dev/null; then
-    output_warning "rebar3 install failed — only required for Erlang dependencies."
+  # Same SSL workaround as hex: fall back to downloading the rebar3 escript
+  # from GitHub releases (DigiCert chain, no key_usage_mismatch).
+  if ! mix local.rebar --force 2>/dev/null; then
+    output_line "Fetching rebar3 from GitHub (builds.hex.pm TLS cert chain workaround)"
+    local rebar_path
+    rebar_path=$(mktemp)
+    if curl -fsSL \
+      "https://github.com/erlang/rebar3/releases/latest/download/rebar3" \
+      -o "${rebar_path}"; then
+      chmod +x "${rebar_path}"
+      mix local.rebar rebar3 "${rebar_path}" --force
+    else
+      output_warning "rebar3 install failed — only required for Erlang dependencies."
+    fi
+    rm -f "${rebar_path}"
   fi
 }
