@@ -53,16 +53,14 @@ download_erlang() {
 install_erlang() {
   output_section "Installing OTP ${erlang_version}"
 
-  local tmp_dir
-  tmp_dir=$(mktemp -d)
-
-  tar zxf "$(erlang_cache_dir)/$(otp_tarball_name)" -C "${tmp_dir}" --strip-components=1
-  "${tmp_dir}/Install" -minimal "${tmp_dir}"
-
+  # Extract directly to the final location so OTP's Install script sets
+  # ROOTDIR correctly. Extracting to a temp dir and copying causes OTP 24's
+  # erl wrapper to have the wrong (now-deleted) ROOTDIR.
   rm -rf "$(erlang_build_dir)"
   mkdir -p "$(erlang_build_dir)"
-  cp -R "${tmp_dir}/." "$(erlang_build_dir)/"
-  rm -rf "${tmp_dir}"
+
+  tar zxf "$(erlang_cache_dir)/$(otp_tarball_name)" -C "$(erlang_build_dir)" --strip-components=1
+  "$(erlang_build_dir)/Install" -minimal "$(erlang_build_dir)"
 
   PATH="$(erlang_build_dir)/bin:${PATH}"
   export PATH
