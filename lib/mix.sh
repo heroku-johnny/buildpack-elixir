@@ -4,10 +4,13 @@
 
 install_hex() {
   output_section "Installing Hex"
-  mix local.hex --force --quiet
+  # HEX_UNSAFE_HTTPS: OTP 25+ strict TLS validation rejects the key_usage_mismatch
+  # in the builds.hex.pm cert chain. Hex verifies package integrity by hash
+  # independently of HTTPS, so this does not compromise package authenticity.
+  HEX_UNSAFE_HTTPS=1 mix local.hex --force --quiet
 }
 
 install_rebar() {
   output_section "Installing rebar"
-  mix local.rebar --force --quiet
+  HEX_UNSAFE_HTTPS=1 mix local.rebar --force --quiet
 }
